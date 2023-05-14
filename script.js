@@ -12,39 +12,41 @@ function getPlayerChoice() {
   return options[playerIndex - 1];
 }
 
-function playRound(playerSelection, computerSelection) {
-  if (playerSelection === computerSelection) return "it's a tie";
+function playRound(playerChoice, computerChoice) {
+  if (playerChoice === computerChoice) return "it's a tie";
   else if (
-    (playerSelection === "rock" && computerSelection === "scissors") ||
-    (playerSelection === "paper" && computerSelection === "rock") ||
-    (playerSelection === "scissors" && computerSelection === "paper")
+    (playerChoice === "rock" && computerChoice === "scissors") ||
+    (playerChoice === "paper" && computerChoice === "rock") ||
+    (playerChoice === "scissors" && computerChoice === "paper")
   ) {
-    return `${playerSelection} beats ${computerSelection}! you won :D`;
+    return `${playerChoice} beats ${computerChoice}! you won :D`;
   } else {
-    return `${computerSelection} beats ${playerSelection}! you lost :(`;
+    return `${computerChoice} beats ${playerChoice}! you lost :(`;
   }
 }
 
-function game() {
-  let scores = {
-    player: 0,
-    computer: 0,
-  };
-  for (i = 1; i <= 5; ++i) {
-    const playerSelection = getPlayerChoice();
-    const computerSelection = getComputerChoice();
-    const outcome = playRound(playerSelection, computerSelection);
-    if (outcome.includes("won")) scores.player++;
-    else scores.computer++;
-    console.log(`Round ${i}: ${outcome}`);
-  }
-  if (scores.player > scores.computer)
-    console.log(
-      `CONGRATULATIONS!!! YOU WON (${scores.player} - ${scores.computer})`
-    );
-  else {
-    console.log(`YOU LOST (${scores.player} - ${scores.computer})`);
-  }
-}
+const score = document.querySelector(".score");
+let playerScore = 0,
+  computerScore = 0;
 
-game();
+const buttons = document.querySelectorAll(".btn");
+buttons.forEach((button) => {
+  button.addEventListener("click", (event) => {
+    // append result of current round to my .results div
+    const className = event.target.className.split(" ")[1];
+    const result = playRound(className, getComputerChoice());
+    const resultsDiv = document.querySelector(".results");
+    resultsDiv.innerHTML += result + "<br>";
+
+    // add a point to the winner
+    if (result.includes("won")) playerScore++;
+    else computerScore++;
+
+    // render the new score
+    score.innerHTML = playerScore + " - " + computerScore;
+
+    // end game
+    if (playerScore === 5) resultsDiv.innerHTML += "YOU WOOOON!!!";
+    else if (computerScore === 5) resultsDiv.innerHTML += "YOU LOST :(";
+  });
+});
